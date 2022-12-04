@@ -1,15 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <select @change="changeView($event)">
+      <option>Calendar</option>
+      <option>Map</option>
+    </select>
+    <Calendar v-if="(this.view === 'Calendar')"/>
+    <Map v-if="(this.view === 'Map')"/>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Calendar from './components/Calendar.vue';
+import Map from './components/Map.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Calendar,
+    Map,
+  },
+  data() {
+    return {
+      view : "Calendar",
+    }
+  },
+  methods: {
+    changeView(event)
+      {
+        this.view = event.target.value;
+      },
   }
 }
 </script>

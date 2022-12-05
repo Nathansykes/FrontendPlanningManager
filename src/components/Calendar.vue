@@ -25,12 +25,14 @@ export default {
         eventClick: this.onEventClick,
         events: [],
         ApplicationUser: null,
-        contentHeight:window.innerHeight,
+        contentHeight: 'auto',
         businessHours: {
           daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
           startTime: '08:00',
           endTime: '18:00',
         },
+        slotMinTime: "07:00:00",
+        slotMaxTime: "20:00:00",
       },
     };
   },

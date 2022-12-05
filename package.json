@@ -13,6 +13,7 @@
     "@fullcalendar/timegrid": "^5.11.3",
     "@fullcalendar/vue3": "^5.11.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
+    "@popperjs/core": "^2.11.6",
     "axios": "^1.2.0",
     "bootstrap": "^5.2.3",
     "core-js": "^3.8.3",

@@ -64,3 +64,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+@import './assets/bootstrap-theme.scss';
+@import './assets/all.css';
+@import "~bootstrap/scss/bootstrap.scss";
+@import 'bootstrap/dist/css/bootstrap.min.css';
+</style>

@@ -10,7 +10,7 @@
       <br />
         <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
           <div v-for="collector in this.collectors" :key="collector" :value="collector" 
-            class="card border-primary mb-3">
+            class="card text-white mb-3" :class="`bg-${collector.color}`">
             <div class="card-header">{{ collector.name }}</div>
             <div class="card-body">
               <p class="card-text">ID: {{ collector.id }}</p>
@@ -26,7 +26,7 @@
       <br />
         <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
           <div v-for="task in this.tasks" :key="task.id" :value="task.id" 
-            class="card border-primary mb-3"
+            class="card bg-primary mb-3"
             :data-event="JSON.stringify(task)">
             <div class="card-header">{{ task.title }}</div>
             <div class="card-body">
@@ -43,6 +43,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import BootStrapClasses from "../BootStrapClasses.js";
 
 export default {
   name: "app",
@@ -81,10 +82,15 @@ export default {
 
     initialSetup() {
       //create some collectors
-      for(let i = 0; i < 5; i++) {
+      for(let i = 0; i < 7; i++) {
+        var bsIndex = i;
+        if(bsIndex > 5){
+          bsIndex = 0;
+        }
         this.collectors.push({
           name: "Collector " + i,
-          id: i
+          id: i,
+          color: BootStrapClasses[bsIndex]
         });
       }
 

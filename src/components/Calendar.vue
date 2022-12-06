@@ -45,6 +45,8 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import BootStrapClasses from "../BootStrapClasses.js";
+import Collectors from "test-data/collectors";
+import Tasks from "test-data/tasks";
 
 export default {
   name: "app",
@@ -62,23 +64,13 @@ export default {
             headerContent: 'Collectors'
           }
         ],
-        resources: [
-        {
-          id: 'a',
-          title: 'Will Simster'
-        },
-        {
-          id: 'b',
-          title: 'Ben Jefferson'
-        },
-        {
-          id: 'c',
-          title: 'Nathan Sykes'
-        },
-        {
-          id: 'd',
-          title: 'Joe Takac'
-        }],
+        resources: Collectors.map(collector => {
+          return {
+            id: collector.id,
+            title: collector.name,
+            color: BootStrapClasses[collector.id % 7].code
+          }
+        }),        
         editable: true,
         selectable: true,
         dropable: true,
@@ -97,37 +89,13 @@ export default {
         slotMinTime: "07:00:00",
         slotMaxTime: "20:00:00",
       },
-      collectors: [],
-      tasks: []
+      collectors: Collectors,
+      tasks: Tasks
     };
   },
   methods: {
 
-    initialSetup() {
-      //create some collectors
-      for (let i = 0; i < 7; i++) {
-        var bsIndex = i;
-        if (bsIndex > 5) {
-          bsIndex = 0;
-        }
-        this.collectors.push({
-          name: "Collector " + i,
-          id: i,
-          color: BootStrapClasses[bsIndex]
-        });
-      }
-
-
-      //create some tasks
-      for (let i = 0; i < 10; i++) {
-        let task = {
-          id: i,
-          title: "Task " + i,
-          location: "Location " + i,
-        };
-        this.tasks.push(task);
-      }
-
+    initialSetup() {      
       //make tasks draggable
       var ele = this.$refs[`taskContainer`]
       new Draggable(ele, {

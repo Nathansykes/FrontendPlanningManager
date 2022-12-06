@@ -5,27 +5,15 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-2">
-      <h3 class="text-center">Collectors</h3>
-      <br />
-      <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="collector in this.collectors" :key="collector" :value="collector" class="card text-white mb-3"
-          :class="`bg-${collector.color}`">
-          <div class="card-header">{{ collector.name }}</div>
-          <div class="card-body">
-            <p class="card-text">ID: {{ collector.id }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-8">
+
+    <div class="col-md-10">
       <FullCalendar :options="calendarOptions" />
     </div>
     <div class="col-md-2">
       <h3 class="text-center">Tasks</h3>
       <br />
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="task in this.tasks" :key="task.id" :value="task.id" class="card bg-primary mb-3"
+        <div v-for="task in this.tasks" :key="task.id" :value="task.id" class="card bg-primary mb-3 task-card"
           :data-event="JSON.stringify(task)">
           <div class="card-header">{{ task.title }}</div>
           <div class="card-body">
@@ -45,8 +33,8 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import BootStrapClasses from "../BootStrapClasses.js";
-import Collectors from "test-data/collectors";
-import Tasks from "test-data/tasks";
+import Collectors from "../../test-data/collectors";
+import Tasks from "../../test-data/tasks";
 
 export default {
   name: "app",
@@ -55,22 +43,48 @@ export default {
   },
   data() {
     return {
-      calendarOptions: {
+      calendarOptions: this.getCalendarOptions(),
+      collectors: Collectors,
+      tasks: Tasks
+    };
+  },
+  methods: {
+    initialSetup() {
+      this.calendarOptions.resources = this.collectors.map(collector => ({
+        id: collector.id,
+        title: collector.name,
+        eventColor: (BootStrapClasses[collector.id % 6]).code
+      }));
+
+      //make tasks draggable
+      var ele = this.$refs[`taskContainer`]
+      new Draggable(ele, {
+        itemSelector: '.card'
+      });
+    },
+
+    eventDragStop(e) {
+      this.$alert('Event Removed');
+      e.event.remove();      
+    },
+
+    getCalendarOptions() {
+      return {
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         plugins: [resourceTimelinePlugin, interactionPlugin],
         initialView: "resourceTimeline",
+        headerToolbar: {
+          left: '',
+          center: 'title',
+          right: 'prev,today,next resourceTimelineDay,resourceTimelineWeek'
+        },
         resourceAreaColumns: [
           {
             headerContent: 'Collectors'
           }
         ],
-        resources: Collectors.map(collector => {
-          return {
-            id: collector.id,
-            title: collector.name,
-            color: BootStrapClasses[collector.id % 7].code
-          }
-        }),        
+        resourceAreaWidth: '15%',
+        resources: [],
         editable: true,
         selectable: true,
         dropable: true,
@@ -86,26 +100,16 @@ export default {
           startTime: '08:00',
           endTime: '18:00',
         },
-        slotMinTime: "07:00:00",
-        slotMaxTime: "20:00:00",
-      },
-      collectors: Collectors,
-      tasks: Tasks
-    };
-  },
-  methods: {
-
-    initialSetup() {      
-      //make tasks draggable
-      var ele = this.$refs[`taskContainer`]
-      new Draggable(ele, {
-        itemSelector: '.card'
-      });
-
+        slotMinWidth: 20,
+        slotDuration: "00:10:00",
+        slotMinTime: "08:00:00",
+        slotMaxTime: "18:00:00",
+        eventDragStop: this.eventDragStop,
+      };
     },
   },
   mounted() {
     this.initialSetup();
-  }
+  },
 };
 </script>

@@ -13,7 +13,8 @@ app.config.globalProperties.$alert = function (message, type = 'alert-primary', 
     var item = { msg: message, type: type, id: id };
     this.alerts.push(item);
     setTimeout(() => {
-        document.getElementById('close-' + id).click();
+        var ele = document.getElementById('close-' + id);
+        if(ele){ ele.click(); }
     }, time);
 }
 

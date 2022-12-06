@@ -8,32 +8,31 @@
     <div class="col-md-2">
       <h3 class="text-center">Collectors</h3>
       <br />
-        <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-          <div v-for="collector in this.collectors" :key="collector" :value="collector" 
-            class="card text-white mb-3" :class="`bg-${collector.color}`">
-            <div class="card-header">{{ collector.name }}</div>
-            <div class="card-body">
-              <p class="card-text">ID: {{ collector.id }}</p>
-            </div>
+      <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
+        <div v-for="collector in this.collectors" :key="collector" :value="collector" class="card text-white mb-3"
+          :class="`bg-${collector.color}`">
+          <div class="card-header">{{ collector.name }}</div>
+          <div class="card-body">
+            <p class="card-text">ID: {{ collector.id }}</p>
           </div>
         </div>
+      </div>
     </div>
     <div class="col-md-8">
       <FullCalendar :options="calendarOptions" />
     </div>
-    <div class="col-md-2" >
+    <div class="col-md-2">
       <h3 class="text-center">Tasks</h3>
       <br />
-        <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-          <div v-for="task in this.tasks" :key="task.id" :value="task.id" 
-            class="card bg-primary mb-3"
-            :data-event="JSON.stringify(task)">
-            <div class="card-header">{{ task.title }}</div>
-            <div class="card-body">
-              <p class="card-text">{{ task.location }}</p>
-            </div>
+      <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
+        <div v-for="task in this.tasks" :key="task.id" :value="task.id" class="card bg-primary mb-3"
+          :data-event="JSON.stringify(task)">
+          <div class="card-header">{{ task.title }}</div>
+          <div class="card-body">
+            <p class="card-text">{{ task.location }}</p>
           </div>
         </div>
+      </div>
     </div>
   </div>
 </template>
@@ -82,9 +81,9 @@ export default {
 
     initialSetup() {
       //create some collectors
-      for(let i = 0; i < 7; i++) {
+      for (let i = 0; i < 7; i++) {
         var bsIndex = i;
-        if(bsIndex > 5){
+        if (bsIndex > 5) {
           bsIndex = 0;
         }
         this.collectors.push({

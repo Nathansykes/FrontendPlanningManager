@@ -29,7 +29,7 @@
             </form>
           </li>
           <li class="nav-item">
-            <a class="nav-link">Logout</a>
+            <a class="nav-link">Logout <i class="bi bi-box-arrow-right"></i></a>
           </li>
         </div>
       </div>
@@ -38,19 +38,26 @@
       <Calendar v-if="(this.view == 0)" />
       <Map v-if="(this.view == 1)" />
     </div>
-
+    <div id="alertContainer">
+      <div v-for="alert in alerts" :key="alert">
+        <Alert :msg="alert.msg" :type="alert.type" :id="alert.id" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Calendar from './components/Calendar.vue';
 import Map from './components/Map.vue';
+import Alert from './components/Alert.vue';
+
 
 export default {
   name: 'App',
   components: {
     Calendar,
     Map,
+    Alert,
   },
   data() {
     return {
@@ -60,6 +67,7 @@ export default {
   methods: {
     changeView(viewIndex) {
       this.view = viewIndex;
+      this.$alert('changed view')
     },
   }
 }

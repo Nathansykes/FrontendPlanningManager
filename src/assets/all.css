@@ -4,6 +4,14 @@
     margin: 0px;
 }
 
-.nav-item{
+.nav-item {
     cursor: pointer;
+}
+
+#alertContainer {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 300px;
+    z-index: 9999;
 }

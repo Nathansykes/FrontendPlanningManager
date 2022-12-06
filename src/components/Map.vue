@@ -1,28 +1,22 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <!-- Map Display here -->
-            <div class="col">
-                <div id="map"></div>
-            </div>
-            <!-- Coordinates Display here -->
-            <div class="col col-lg-3">
-                <form>
-                    <fieldset>
-                        <legend>Current Coordinates</legend>
-                        <div class="form-group row">
-                            <label class="col-form-label">Latitude: {{ center[0] }}</label>
-                            <label class="col-form-label">Longitude: {{ center[1] }}</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-form-label">Current Location</label>
-                            <input type="text" class="form-control" :value="location" readonly />
-                            <button type="button" class="btn btn-primary" @click="copyLocation">Copy</button>
-                            <button type="button" :disabled="loading" :class="'btn btn-primary ' + { disabled: loading }" class="location-btn" @click="getLocation">Get Location</button>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <h3 class="text-center">Collectors</h3>
+            <br />
+
+        </div>
+        <div class="col-md-8">
+            <div id="map"></div>
+        </div>
+        <div class="col-md-2">
+            <h3 class="text-center">Tasks</h3>
+            <br />
+
         </div>
     </div>
 </template>
@@ -34,14 +28,14 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 export default {
-  name: "app",
-  data() {
-    return {
-        loading: false,
-        location: "",
-        access_token: process.env.VUE_APP_MAP_ACCESS_TOKEN,
-        center: [0, 0],
-        map: {},
+    name: "app",
+    data() {
+        return {
+            loading: false,
+            location: "",
+            access_token: process.env.VUE_APP_MAP_ACCESS_TOKEN,
+            center: [0, 0],
+            map: {},
         }
     },
     methods: {
@@ -55,7 +49,7 @@ export default {
                     zoom: 11,
                 });
 
-                let geocoder =  new MapboxGeocoder({
+                let geocoder = new MapboxGeocoder({
                     accessToken: this.access_token,
                     mapboxgl: mapboxgl,
                     marker: false,
@@ -68,8 +62,8 @@ export default {
                         draggable: true,
                         color: "#D80739",
                     })
-                    .setLngLat(e.result.center)
-                    .addTo(this.map);
+                        .setLngLat(e.result.center)
+                        .addTo(this.map);
 
                     this.center = e.result.center;
 
@@ -77,7 +71,7 @@ export default {
                         this.center = Object.values(e.target.getLngLat());
                     });
                 });
-            } 
+            }
             catch (err) {
                 console.log("map error", err);
             }
@@ -88,7 +82,7 @@ export default {
                 const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${this.center[0]},${this.center[1]}.json?access_token=${this.access_token}`);
                 this.loading = false;
                 this.location = response.data.features[0].place_name;
-            } 
+            }
             catch (err) {
                 this.loading = false;
                 console.log(err);

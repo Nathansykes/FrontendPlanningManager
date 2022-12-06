@@ -40,6 +40,8 @@
 <script>
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import { Calendar } from '@fullcalendar/core';
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import BootStrapClasses from "../BootStrapClasses.js";
@@ -53,8 +55,30 @@ export default {
     return {
       calendarOptions: {
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
-        plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
-        initialView: "timeGridWeek",
+        plugins: [resourceTimelinePlugin, interactionPlugin],
+        initialView: "resourceTimeline",
+        resourceAreaColumns: [
+          {
+            headerContent: 'Collectors'
+          }
+        ],
+        resources: [
+        {
+          id: 'a',
+          title: 'Will Simster'
+        },
+        {
+          id: 'b',
+          title: 'Ben Jefferson'
+        },
+        {
+          id: 'c',
+          title: 'Nathan Sykes'
+        },
+        {
+          id: 'd',
+          title: 'Joe Takac'
+        }],
         editable: true,
         selectable: true,
         dropable: true,

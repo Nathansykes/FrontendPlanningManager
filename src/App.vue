@@ -29,7 +29,7 @@
             </form>
           </li>
           <li class="nav-item">
-            <a class="nav-link">Logout</a>
+            <a class="nav-link">Logout <i class="bi bi-box-arrow-right"></i></a>
           </li>
         </div>
       </div>

@@ -5,6 +5,7 @@ var Tasks = [
         client: 'EternaWaste Ltd',
         location: '13 Eccleshall Road, Sheffield',
         postcode: 'S11 8TH',
+        assigned: false
     },
     {
         id: 2,
@@ -12,6 +13,7 @@ var Tasks = [
         client: 'Company Ltd',
         location: '23 Eccleshall Road, Sheffield',
         postcode: 'S11 8JN',
+        assigned: false
     },
     {
         id: 3,
@@ -19,6 +21,7 @@ var Tasks = [
         client: 'Company Ltd',
         location: '19 Eccleshall Road, Sheffield',
         postcode: 'S11 8SM',
+        assigned: false
     },
     {
         id: 4,
@@ -26,6 +29,7 @@ var Tasks = [
         client: 'Company Ltd',
         location: '11 Eccleshall Road, Sheffield',
         postcode: 'S11 8JB',
+        assigned: false
     },
     {
         id: 5,
@@ -33,6 +37,7 @@ var Tasks = [
         client: 'Company Ltd',
         location: '17 Eccleshall Road, Sheffield',
         postcode: 'S11 8YL',
+        assigned: false
     }
     
 ]

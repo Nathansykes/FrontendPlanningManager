@@ -13,11 +13,15 @@
       <h3 class="text-center">Tasks</h3>
       <br />
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="task in this.tasks" :key="task.id" :value="task.id" class="card bg-primary mb-3 task-card"
+        <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id" class="card bg-primary mb-3 task-card"
           :data-event="JSON.stringify(task)">
           <div class="card-header">{{ task.title }}</div>
           <div class="card-body">
-            <p class="card-text">{{ task.location }}</p>
+            <p class="card-text">
+              {{ task.client }} <br />
+              {{ task.location }} <br />
+              {{ task.postcode }} 
+            </p>
           </div>
         </div>
       </div>
@@ -63,9 +67,14 @@ export default {
       });
     },
 
-    eventDragStop(e) {
+    eventDragStop(info) {
       this.$alert('Event Removed');
-      e.event.remove();      
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = false;
+      info.event.remove();
+    },
+    eventReceive(info) {
+      this.$alert('Event Added');
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
     },
 
     getCalendarOptions() {
@@ -105,6 +114,7 @@ export default {
         slotMinTime: "08:00:00",
         slotMaxTime: "18:00:00",
         eventDragStop: this.eventDragStop,
+        eventReceive: this.eventReceive,
       };
     },
   },

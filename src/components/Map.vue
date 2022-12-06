@@ -10,8 +10,8 @@
             <br />
 
         </div>
-        <div class="col-md-8">
-            <div id="map"></div>
+        <div class="col-md-8" style="margin-top: 5%">
+            <div id="map" style="height: 600px"></div>
         </div>
         <div class="col-md-2">
             <h3 class="text-center">Tasks</h3>

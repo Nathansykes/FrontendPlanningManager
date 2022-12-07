@@ -39,9 +39,10 @@
       <Map v-if="(this.view == 1)" />
     </div>
     <div id="alertContainer">
-      <div v-for="alert in alerts" :key="alert">
-        <Alert :msg="alert.msg" :type="alert.type" :id="alert.id" />
-      </div>
+      
+    </div>
+    <div class="toast-container" id="toastContainer">
+
     </div>
   </div>
 </template>
@@ -49,7 +50,6 @@
 <script>
 import Calendar from './components/Calendar.vue';
 import Map from './components/Map.vue';
-import Alert from './components/Alert.vue';
 
 
 export default {
@@ -57,7 +57,6 @@ export default {
   components: {
     Calendar,
     Map,
-    Alert,
   },
   data() {
     return {
@@ -67,7 +66,7 @@ export default {
   methods: {
     changeView(viewIndex) {
       this.view = viewIndex;
-      this.$alert('changed view')
+      this.$toast('View Changed', `View changed to ${viewIndex == 0 ? 'Calendar' : 'Map'}`)
     },
   }
 }

@@ -20,7 +20,7 @@ var Tasks = [
         title: 'Food colouring collection',
         client: 'Company Ltd',
         location: '19 Eccleshall Road, Sheffield',
-        postcode: 'S11 8SM',
+        postcode: 'S11 8QE',
         assigned: false
     },
     {
@@ -28,7 +28,7 @@ var Tasks = [
         title: 'Human Waste collection',
         client: 'Company Ltd',
         location: '11 Eccleshall Road, Sheffield',
-        postcode: 'S11 8JB',
+        postcode: 'S1 4QG',
         assigned: false
     },
     {
@@ -36,7 +36,7 @@ var Tasks = [
         title: 'Morgue sample collection',
         client: 'Company Ltd',
         location: '17 Eccleshall Road, Sheffield',
-        postcode: 'S11 8YL',
+        postcode: 'S11 8PF',
         assigned: false
     }
     

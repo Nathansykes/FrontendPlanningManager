@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import FullCalendar from "@fullcalendar/vue3";
+import FullCalendar, { Calendar } from "@fullcalendar/vue3";
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import BootStrapClasses from "../BootStrapClasses.js";
@@ -157,6 +157,7 @@ export default {
         slotMaxTime: "18:00:00",
         eventDragStop: this.eventDragStop,
         eventReceive: this.eventReceive,
+        eventChange: this.eventChange,
       },
       collectors: Collectors.filter(x => x.region == this.region),
       tasks: Tasks.filter(x => this.$getRegion(x.postcode) == this.region),
@@ -209,6 +210,37 @@ export default {
       }));
     },  
 
+    eventChange(){
+      this.saveCalendar();
+    },
+
+    loadCalendar(){
+      this.tasks = JSON.parse(localStorage.getItem('tasks'));
+      let events = JSON.parse(localStorage.getItem('calendar'));
+      if(events){
+        events.forEach(x => {
+          var eventToAdd = {
+            id: x.event.id,
+            title: x.event.title,
+            start: x.event.start,
+            end: x.event.end,
+            resourceId: x.collector.id
+          }
+          this.$refs.calendar.getApi().addEvent(eventToAdd);
+        })
+      }
+    },
+
+    saveCalendar(){
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      let events = this.$refs.calendar.getApi().getEvents();
+      let storeObject = events.map(x => ({
+        event: x,
+        collector: x.getResources()[0]
+      }))
+      console.log(storeObject);
+      localStorage.setItem('calendar', JSON.stringify(storeObject));
+    },
 
     initialSetup() {
       this.setResources();
@@ -229,14 +261,17 @@ export default {
         info.event.remove();
         this.$alert('Event Removed');
       }
+      this.saveCalendar();
     },
     eventReceive(info) {
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
+      this.saveCalendar();
     },
   },
   mounted() {
     this.initialSetup();
+    this.loadCalendar();
   },
 };
 </script>

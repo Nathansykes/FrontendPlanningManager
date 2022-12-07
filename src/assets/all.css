@@ -37,3 +37,21 @@
 .task-card:hover {
     cursor: grab;
 }
+
+#messageContainerParent{
+    position: fixed;
+    bottom: 30px;
+    width: 80%;
+    z-index: 9999;
+}
+
+.message-toast {
+    margin-bottom: 10px;
+}
+.single-message-container{
+    width: 80%;
+}
+
+.hidden{
+    display: none;
+}

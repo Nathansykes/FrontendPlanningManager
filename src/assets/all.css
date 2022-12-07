@@ -24,6 +24,16 @@
     z-index: 9999;
 }
 
-.task-card:hover{
+#tasksHeader {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+#tasksHeader > button{
+    position: absolute;
+    right: 0px;
+}
+
+.task-card:hover {
     cursor: grab;
 }

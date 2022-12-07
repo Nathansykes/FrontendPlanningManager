@@ -5,31 +5,22 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-2">
-      <h3 class="text-center">Collectors</h3>
-      <br />
-      <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="collector in this.collectors" :key="collector" :value="collector" class="card text-white mb-3"
-          :class="`bg-${collector.color}`">
-          <div class="card-header">{{ collector.name }}</div>
-          <div class="card-body">
-            <p class="card-text">ID: {{ collector.id }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-8">
-      <FullCalendar :options="calendarOptions" />
+    <div class="col-md-10">
+      <FullCalendar :options="calendarOptions" ref="calendar" />
     </div>
     <div class="col-md-2">
       <h3 class="text-center">Tasks</h3>
       <br />
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="task in this.tasks" :key="task.id" :value="task.id" class="card bg-primary mb-3"
-          :data-event="JSON.stringify(task)">
+        <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
+          class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
           <div class="card-header">{{ task.title }}</div>
           <div class="card-body">
-            <p class="card-text">{{ task.location }}</p>
+            <p class="card-text">
+              {{ task.client }} <br />
+              {{ task.location }} <br />
+              {{ task.postcode }}
+            </p>
           </div>
         </div>
       </div>
@@ -45,6 +36,8 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import BootStrapClasses from "../BootStrapClasses.js";
+import Collectors from "../../test-data/collectors";
+import Tasks from "../../test-data/tasks";
 
 export default {
   name: "app",
@@ -57,28 +50,18 @@ export default {
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         plugins: [resourceTimelinePlugin, interactionPlugin],
         initialView: "resourceTimeline",
+        headerToolbar: {
+          left: '',
+          center: 'title',
+          right: 'prev,today,next resourceTimelineDay,resourceTimelineWeek'
+        },
         resourceAreaColumns: [
           {
             headerContent: 'Collectors'
           }
         ],
-        resources: [
-        {
-          id: 'a',
-          title: 'Will Simster'
-        },
-        {
-          id: 'b',
-          title: 'Ben Jefferson'
-        },
-        {
-          id: 'c',
-          title: 'Nathan Sykes'
-        },
-        {
-          id: 'd',
-          title: 'Joe Takac'
-        }],
+        resourceAreaWidth: '15%',
+        resources: [],
         editable: true,
         selectable: true,
         dropable: true,
@@ -94,50 +77,44 @@ export default {
           startTime: '08:00',
           endTime: '18:00',
         },
-        slotMinTime: "07:00:00",
-        slotMaxTime: "20:00:00",
+        slotMinWidth: 20,
+        slotDuration: "00:10:00",
+        slotMinTime: "08:00:00",
+        slotMaxTime: "18:00:00",
+        eventDragStop: this.eventDragStop,
+        eventReceive: this.eventReceive,
       },
-      collectors: [],
-      tasks: []
+      collectors: Collectors,
+      tasks: Tasks,
     };
   },
   methods: {
-
     initialSetup() {
-      //create some collectors
-      for (let i = 0; i < 7; i++) {
-        var bsIndex = i;
-        if (bsIndex > 5) {
-          bsIndex = 0;
-        }
-        this.collectors.push({
-          name: "Collector " + i,
-          id: i,
-          color: BootStrapClasses[bsIndex]
-        });
-      }
-
-
-      //create some tasks
-      for (let i = 0; i < 10; i++) {
-        let task = {
-          id: i,
-          title: "Task " + i,
-          location: "Location " + i,
-        };
-        this.tasks.push(task);
-      }
+      this.calendarOptions.resources = this.collectors.map(collector => ({
+        id: collector.id,
+        title: collector.name,
+        eventColor: (BootStrapClasses[collector.id % 6]).code
+      }));
 
       //make tasks draggable
       var ele = this.$refs[`taskContainer`]
       new Draggable(ele, {
         itemSelector: '.card'
       });
+    },
 
+    eventDragStop(info) {
+      this.$alert('Event Removed');
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = false;
+      info.event.remove();
+    },
+    eventReceive(info) {
+      this.$alert('Event Added');
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
     },
   },
   mounted() {
     this.initialSetup();
-  }
+  },
 };
 </script>

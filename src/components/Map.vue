@@ -19,7 +19,33 @@
             </div>
         </div>
         <div class="col-md-8" style="margin-top: 4.5%">
-            <div id="map" style="overflow-y:scroll; height: 78vh;"></div>
+            <div class="row">
+                <div id="map" style="height: 66vh;"></div>
+            </div>
+            <div class="row">
+                <section class="time-line-box">
+                    <div class="swiper-container text-center"> 
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="timestamp"><span class="date">09:15am</span></div>
+                                <div class="status"><span>Pickup 1</span></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="timestamp"><span class="date">11:20am</span></div>
+                                <div class="status"><span>Pickup 2</span></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="timestamp"><span class="date">2:30am</span></div>
+                                <div class="status"><span>Pickup 3</span></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="timestamp"><span class="date">4:30am</span></div>
+                                <div class="status"><span>Pickup 4</span></div>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+            </div>
         </div>
         <div class="col-md-2">
             <h3 class="text-center">Tasks</h3>
@@ -83,6 +109,7 @@ export default {
                 });
 
                 this.map.addControl(geocoder);
+                this.map.addControl(new mapboxgl.NavigationControl());
 
                 geocoder.on("result", (e) => {
                     const marker = new mapboxgl.Marker({
@@ -282,3 +309,64 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+
+.time-line-box {
+    margin-top: 2vh;
+    height: 10vh;
+}
+
+.time-line-box .timeline {
+  display: flex;
+  text-align: center;
+}
+
+.time-line-box .timestamp {
+  margin-bottom: 5px;
+}
+
+.time-line-box .status {
+  padding: 0px 10px;
+  display: flex;
+  justify-content: center;
+  border-top: 3px solid #648FFF;
+  position: relative;
+}
+.time-line-box .status span {
+  padding-top: 8px;
+}
+.time-line-box .status span:before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background-color: #648FFF;
+  border-radius: 12px;
+  border: 2px solid #648FFF;
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  transition: all 200ms ease-in;
+}
+
+.swiper-container {
+  width: 95%; 
+  margin: auto;
+  overflow-y: auto;
+}
+.swiper-wrapper{
+  margin-top: 2.5vh;
+  display: inline-flex;
+}
+
+.swiper-container::-webkit-scrollbar{
+  height: 2px;
+}
+
+.swiper-slide {
+  width: 200px;
+}
+</style>

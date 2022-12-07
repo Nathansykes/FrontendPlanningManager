@@ -9,12 +9,13 @@
             <h3 class="text-center">Collectors</h3>
             <br />
             <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-                <div v-for="collector in this.collectors" :key="collector" :value="collector" class="card text-white mb-3"
-                :class="`bg-${collector.color}`">
-                <div class="card-header">{{ collector.name }}</div>
-                <div class="card-body">
-                    <p class="card-text">ID: {{ collector.id }}</p>
-                </div>
+                <div v-for="collector in this.collectors" :key="collector" :value="collector"
+                    class="card text-white mb-3" style="cursor: pointer" @click="selectCollector(collector.id)"
+                    :class="`bg-${collector.color}`">
+                    <div class="card-header">{{ collector.name }}</div>
+                    <div class="card-body">
+                        <p class="card-text">ID: {{ collector.id }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,13 +53,13 @@
             <br />
             <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
                 <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-                class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
+                    class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
                     <div class="card-header">{{ task.title }}</div>
                     <div class="card-body">
                         <p class="card-text">
-                        {{ task.client }} <br />
-                        {{ task.location }} <br />
-                        {{ task.postcode }}
+                            {{ task.client }} <br />
+                            {{ task.location }} <br />
+                            {{ task.postcode }}
                         </p>
                     </div>
                 </div>
@@ -83,12 +84,16 @@ export default {
             loading: false,
             location: "",
             access_token: process.env.VUE_APP_MAP_ACCESS_TOKEN,
-            center: [0.1276, 51.5072],
+            center: [-1.495063, 53.372188],
             map: {},
-            start: [-2.526614, 53.055115],
-            collectors: Collectors,
+            start: [-1.495063, 53.372188],
+            collectors: Collectors.map(x => function () {
+                x.color = (BootStrapClasses[x.id % 6]).name;
+                return x;
+            }()),
             tasks: Tasks,
             coordinates: [],
+            selectedCollector: 1,
         }
     },
     methods: {
@@ -116,8 +121,8 @@ export default {
                         draggable: true,
                         color: "#D80739",
                     })
-                    .setLngLat(e.result.center)
-                    .addTo(this.map);
+                        .setLngLat(e.result.center)
+                        .addTo(this.map);
 
                     this.center = e.result.center;
 
@@ -143,9 +148,9 @@ export default {
             }
         },
         async plotMap(start, end, index) {
-            
+
             const query = await fetch(
-                `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
                 { method: 'GET' }
             );
             const json = await query.json();
@@ -155,8 +160,8 @@ export default {
                 type: 'Feature',
                 properties: {},
                 geometry: {
-                type: 'LineString',
-                coordinates: route
+                    type: 'LineString',
+                    coordinates: route
                 }
             };
             // if the route already exists on the map, we'll reset it using setData
@@ -166,55 +171,23 @@ export default {
             // otherwise, we'll make a new request
             else {
                 this.map.addLayer({
-                id: 'route' + index,
-                type: 'line',
-                source: {
-                    type: 'geojson',
-                    data: geojson
-                },
-                layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                paint: {
-                    'line-color': '#3887be',
-                    'line-width': 5,
-                    'line-opacity': 0.75
-                }
-                });
-            }
-
-            this.map.on('load', () => {
-                // make an initial directions request that
-                // starts and ends at the same location
-                this.plotMap(start, start, index);
-
-                // Add starting point to the map
-                this.map.addLayer({
-                    id: 'point',
-                    type: 'circle',
+                    id: 'route' + index,
+                    type: 'line',
                     source: {
-                    type: 'geojson',
-                    data: {
-                        type: 'FeatureCollection',
-                        features: [
-                        {
-                            type: 'Feature',
-                            properties: {},
-                            geometry: {
-                            type: 'Point',
-                            coordinates: start
-                            }
-                        }
-                        ]
-                    }
+                        type: 'geojson',
+                        data: geojson
+                    },
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
                     },
                     paint: {
-                    'circle-radius': 10,
-                    'circle-color': '#3887be'
+                        'line-color': this.getCollectorEvents()[0].collector.eventBackgroundColor,
+                        'line-width': 5,
+                        'line-opacity': 0.75
                     }
                 });
-            });            
+            }
         },
         copyLocation() {
             if (this.location) {
@@ -223,50 +196,74 @@ export default {
             }
             return;
         },
-    },
-    mounted() {
-        this.createMap()
 
-        this.coordinates.push(this.start);
-        this.coordinates.push([-2.180499,52.996990]);
-        this.coordinates.push([-2.107938,52.573309]);
-        this.coordinates.push([-2.458325,52.666138]);
-        this.coordinates.push([-2.749057,52.702633]);
-        this.coordinates.push(this.start);
+        async selectCollector(id) {
+            this.selectedCollector = id;
+            let routes = this.map.getStyle().layers.filter(x => x.id.includes('route'));
 
-        this.map.on('load', () => {
+            for(let i = 0; i < routes.length; i++) {
+                this.map.removeLayer('route' + i);
+                this.map.removeSource('route' + i);
+            }
+            if(this.map.getSource('points'))
+            {
+                this.map.removeLayer('points');
+                this.map.removeSource('points');
+            }
             
+            await this.setCoordinates(id);
+
+            this.plotRoute();
+            this.setPlots();
+        },
+
+        getCollectorEvents(){
+            var calendar = JSON.parse(localStorage.getItem('calendar'));
+            var events = calendar.filter(x => x.collector.id == this.selectedCollector);
+            return events;
+        },
+        
+
+        async setCoordinates() {
+            this.coordinates = [];
+            var events = this.getCollectorEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
+            var postcodes = events.map(x => x.event?.extendedProps?.postcode);
+
+            this.coordinates.push(this.start);
+
+            for (let i = 0; i < postcodes.length; i++) {
+                try {
+                    let query = await fetch(
+                        `https://api.mapbox.com/geocoding/v5/mapbox.places/${postcodes[i]}.json?access_token=${mapboxgl.accessToken}`,
+                        { method: 'GET' }
+                    )
+                    var data = await query.json();
+                    let coordinates = data.features[0].geometry.coordinates;
+                    if (coordinates) {
+                        this.coordinates.push(coordinates);
+                    }
+                }
+                catch {
+                    // probs not a real postcode
+                }                
+            }
+
+            this.coordinates.push(this.start);
+
+        },
+        plotRoute() {
             this.coordinates.map((coords, index) => this.plotMap(this.coordinates[index - 1] || this.start, coords, index));
+        },
+        setPlots(){
+            let plots = this.coordinates.map((coords, index) => {
+                return {
+                    coordinates: coords,
+                    title: 'Collection' + (index + 1)
+                }
+            })
 
-            var plots = [
-            {
-                coordinates: this.coordinates[0],
-                title : 'Home'
-            },
-            {
-                coordinates : this.coordinates[1],
-                title : 'Pickup 1'
-            },
-            {
-                coordinates: this.coordinates[2],
-                title : 'Pickup 2'
-            },
-            {
-                coordinates: this.coordinates[3],
-                title : 'Pickup 3'
-            },
-            {
-                coordinates: this.coordinates[4],
-                title : 'Pickup 4'
-            }];
-
-            this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {
-                if (error) throw error;
-                this.map.addImage('custom-marker', image);
-                // Add a GeoJSON source with 2 points
-                var features = [];
-                plots.map(plot => 
-                {
+            var features = [];
+                plots.map(plot => {
                     features.push({
                         'type': 'Feature',
                         'geometry': {
@@ -280,13 +277,13 @@ export default {
                 })
 
                 this.map.addSource('points', {
-                        'type': 'geojson',
-                        'data': {
-                            'type': 'FeatureCollection',
-                            'features': features,
-                        }
-                    });
-                
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'FeatureCollection',
+                        'features': features,
+                    }
+                });
+
                 // Add a symbol layer
                 this.map.addLayer({
                     'id': 'points',
@@ -304,7 +301,24 @@ export default {
                         'text-anchor': 'top'
                     }
                 });
+
+            
+
+        },
+    },
+
+
+    mounted() {
+        this.createMap()
+        this.setCoordinates(this.selectedCollector);
+
+        this.map.on('load', () => {
+            this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {
+                if (error) throw error;
+                this.map.addImage('custom-marker', image);                
             });
+            this.plotRoute();
+            this.setPlots();            
         });
     },
 }

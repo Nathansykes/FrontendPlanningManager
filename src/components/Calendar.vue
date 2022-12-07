@@ -226,7 +226,8 @@ export default {
               title: x.event.title,
               start: x.event.start,
               end: x.event.end,
-              resourceId: x.collector.id
+              resourceId: x.collector.id,
+              extendedProps: x.event.extendedProps
             }
             this.$refs.calendar.getApi().addEvent(eventToAdd);
           })

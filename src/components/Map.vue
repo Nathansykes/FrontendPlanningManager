@@ -27,9 +27,9 @@
                 <section class="time-line-box">
                     <div class="swiper-container text-center"> 
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide" v-for="(event, index) in this.getCollectorEvents()" :key="index">
+                            <div class="swiper-slide" v-for="(event, index) in this.events" :key="index">
                                 <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
-                                <div class="status"><span>{{event.event.title}}</span></div>
+                                <div class="status" @click="this.map.flyTo({center: event.event.extendedProps.coordinates, zoom : 14});"><span>{{event.event.title}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -82,6 +82,7 @@ export default {
             tasks: Tasks,
             coordinates: [],
             selectedCollector: 1,
+            events: [],
         }
     },
     methods: {
@@ -215,8 +216,8 @@ export default {
 
         async setCoordinates() {
             this.coordinates = [];
-            var events = this.getCollectorEvents();
-            var postcodes = events.map(x => x.event?.extendedProps?.postcode);
+            this.events = this.getCollectorEvents();
+            var postcodes = this.events.map(x => x.event?.extendedProps?.postcode);
 
             this.coordinates.push(this.start);
 
@@ -230,6 +231,7 @@ export default {
                     let coordinates = data.features[0].geometry.coordinates;
                     if (coordinates) {
                         this.coordinates.push(coordinates);
+                        this.events[i].event.extendedProps.coordinates = coordinates;
                     }
                 }
                 catch {
@@ -343,6 +345,12 @@ export default {
   border-top: 3px solid #648FFF;
   position: relative;
 }
+
+.time-line-box .status :hover{
+    cursor: pointer;
+    border-top: 3px solid black;
+}
+
 .time-line-box .status span {
   padding-top: 8px;
 }

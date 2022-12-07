@@ -209,7 +209,6 @@ export default {
             var calendar = JSON.parse(localStorage.getItem('calendar'));
             var events = calendar.filter(x => x.collector.id == this.selectedCollector);
             events = events.sort((a, b) => new Date(a.event.start) - new Date(b.event.start))
-            console.log(events);
             return events;
         },
         
@@ -246,9 +245,19 @@ export default {
         },
         setPlots(){
             let plots = this.coordinates.map((coords, index) => {
-                return {
-                    coordinates: coords,
-                    title: 'Collection' + (index + 1)
+                if (index == 0) 
+                {
+                    return {
+                        coordinates: coords,
+                        title: 'Start'
+                    }
+                }
+                else
+                {
+                    return {
+                        coordinates: coords,
+                        title: 'Collection ' + index
+                    }
                 }
             })
 

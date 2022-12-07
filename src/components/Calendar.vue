@@ -79,7 +79,7 @@
   <div class="modal" id="OnDropModal" ref="newTaskModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form v-on:submit.prevent="AddJourneyTime">
+        <form v-on:submit.prevent="addTimeToTask">
           <div class="modal-header">
             <h5 class="modal-title">Add Journey Time</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -89,8 +89,8 @@
               <h2>Add Journey Time to beginning of the Collection</h2>
             </div>
             <div class="form-group">
-              <label for="clientInput" class="form-label mt-4">Journey Time</label>
-              <input required type="number" class="form-control" id="clientInput" v-model="this.newTask.client"
+              <label for="timeInput" class="form-label mt-4">Journey Time</label>
+              <input required type="number" class="form-control" id="timeInput" v-model="this.addTime.time"
                 aria-describedby="emailHelp" placeholder="Time In Minutes">
             </div>
             <p>A 15% margin will be applied.</p>
@@ -177,6 +177,7 @@ export default {
         now: new Date(),
         eventClick: this.onEventClick,
         events: [],
+        lastEvent: null,
         contentHeight: 'auto',
         businessHours: {
           daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
@@ -203,6 +204,9 @@ export default {
       newCollector: {
         name: '',
         region: '',
+      },
+      addTime: {
+        time: ''
       }
     };
   },
@@ -229,12 +233,21 @@ export default {
         name: this.newCollector.name,
         region: this.newCollector.region
       });
+      
       this.$alert('New Collector Added');
       this.setResources();
       this.$refs.dismissNewCollectorModal.click();
     },
     addTimeToTask() {
+      let currentEvent = this.$refs.calendar.getApi().getEventById(this.lastEvent.id);
+      let currentStart = currentEvent._instance.range.start;
+      let timeWithAdjustment = this.addTime.time*1.15;
+      let x = new Date() + timeWithAdjustment * 60000;
+      let newStart = currentStart - x;
 
+      console.log(newStart);
+      currentEvent.setStart(new Date(newStart));
+      console.log(currentEvent);
     },
 
 
@@ -306,6 +319,7 @@ export default {
       document.getElementById("onDropModalButton").click();
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
+      this.lastEvent = info.event;
       this.saveCalendar();
     },
   },

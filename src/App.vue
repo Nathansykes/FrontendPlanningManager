@@ -10,6 +10,7 @@
             <div class="dropdown-menu">
               <a class="dropdown-item" @click="changeView(0)">Calendar</a>
               <a class="dropdown-item" @click="changeView(1)">Map</a>
+              <a class="dropdown-item" @click="changeView(2)">Collaboration</a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -34,7 +35,8 @@
     </nav>
     <div id="view" class="container-fluid">
       <Calendar v-if="(this.view == 0)" :region="this.$selectedRegion" :key="calendarKey"/>
-      <Map v-if="(this.view == 1)" />
+      <Map v-if="(this.view == 1)" />      
+      <Collaboration v-if="(this.view == 2)"/>
     </div>
     <div id="alertContainer">
       
@@ -48,6 +50,7 @@
 <script>
 import Calendar from './components/Calendar.vue';
 import Map from './components/Map.vue';
+import Collaboration from './components/Collaboration.vue';
 import Regions from '../test-data/regions';
 
 export default {
@@ -55,6 +58,7 @@ export default {
   components: {
     Calendar,
     Map,
+    Collaboration,
   },
   data() {
     return {
@@ -66,7 +70,7 @@ export default {
   methods: {
     changeView(viewIndex) {
       this.view = viewIndex;
-      this.$toast('View Changed', `View changed to ${viewIndex == 0 ? 'Calendar' : 'Map'}`)
+      
     },
     changeRegion(region) {
       this.$selectedRegion = region;

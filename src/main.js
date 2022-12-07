@@ -4,6 +4,7 @@ import 'bootstrap'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import Alert from './components/Alert.vue'
 import Toast from './components/Toast.vue'
+import Message from './components/Message.vue'
 
 const app = createApp(App);
 
@@ -32,6 +33,15 @@ app.config.globalProperties.$toast = function (title, message, time = 5000) {
         var ele = document.getElementById('close-' + id);
         if(ele){ ele.click(); }
     }, time);
+}
+
+app.config.globalProperties.$message = function (title, message, sent, self, userId, ) {
+    console.log(userId);
+    let target = document.getElementById(`messageContainer-${userId}`).appendChild(document.createElement('div'));
+    let id = `message-${Math.random()}`;
+    let data = { msg: message, title: title, sent: sent, self: self };
+    let vnode = createVNode(Message, data);
+    render(vnode, target);
 }
 
 app.config.globalProperties.$getRegion = function (postcode){

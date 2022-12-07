@@ -74,6 +74,39 @@
     </div>
   </div>
 
+  <button id="onDropModalButton" class="btn btn-primary" type="button" data-bs-target="#OnDropModal" data-bs-toggle="modal" title="Add New Task"><i
+            class="bi bi-plus-square"></i></button>
+  <div class="modal" id="OnDropModal" ref="newTaskModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form v-on:submit.prevent="AddJourneyTime">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Journey Time</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <h2>Add Journey Time to beginning of the Collection</h2>
+            </div>
+            <div class="form-group">
+              <label for="clientInput" class="form-label mt-4">Journey Time</label>
+              <input required type="number" class="form-control" id="clientInput" v-model="this.newTask.client"
+                aria-describedby="emailHelp" placeholder="Time In Minutes">
+            </div>
+            <p>A 15% margin will be applied.</p>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+              ref="dismissNewTaskModal">Close</button>
+            <button type="submit" class="btn btn-success">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
   <div class="modal" id="newCollectorModal" ref="newCollectorModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -200,6 +233,9 @@ export default {
       this.setResources();
       this.$refs.dismissNewCollectorModal.click();
     },
+    addTimeToTask() {
+
+    },
 
 
     setResources() {
@@ -267,6 +303,7 @@ export default {
       this.saveCalendar();
     },
     eventReceive(info) {
+      document.getElementById("onDropModalButton").click();
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
       this.saveCalendar();

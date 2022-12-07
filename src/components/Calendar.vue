@@ -74,6 +74,39 @@
     </div>
   </div>
 
+  <button id="onDropModalButton" class="btn btn-primary" type="button" data-bs-target="#OnDropModal" data-bs-toggle="modal" title="Add New Task"><i
+            class="bi bi-plus-square"></i></button>
+  <div class="modal" id="OnDropModal" ref="newTaskModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form v-on:submit.prevent="addTimeToTask">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Journey Time</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeTimeModal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <h2>Add Journey Time to beginning of the Collection</h2>
+            </div>
+            <div class="form-group">
+              <label for="timeInput" class="form-label mt-4">Journey Time (Minutes)</label>
+              <input required type="number" class="form-control" id="timeInput" v-model="this.addTime.time"
+                aria-describedby="emailHelp" placeholder="Time In Minutes">
+            </div>
+            <p>A 15% margin will be applied.</p>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+              ref="dismissNewTaskModal">Don't Add Extra Time</button>
+            <button type="submit" class="btn btn-success">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
   <div class="modal" id="newCollectorModal" ref="newCollectorModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -144,6 +177,7 @@ export default {
         now: new Date(),
         eventClick: this.onEventClick,
         events: [],
+        lastEvent: null,
         contentHeight: 'auto',
         businessHours: {
           daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
@@ -170,6 +204,9 @@ export default {
       newCollector: {
         name: '',
         region: '',
+      },
+      addTime: {
+        time: ''
       }
     };
   },
@@ -196,9 +233,19 @@ export default {
         name: this.newCollector.name,
         region: this.newCollector.region
       });
+      
       this.$alert('New Collector Added');
       this.setResources();
       this.$refs.dismissNewCollectorModal.click();
+    },
+    addTimeToTask() {
+      let currentEvent = this.$refs.calendar.getApi().getEventById(this.lastEvent.id);
+      let currentStart = currentEvent._instance.range.start;
+      let timeToAddMs = this.addTime.time*1.15*60000;
+      let newStartMs = currentStart.valueOf() - timeToAddMs;
+
+      currentEvent.setStart(new Date(newStartMs));
+      document.getElementById('closeTimeModal').click();
     },
 
 
@@ -267,8 +314,10 @@ export default {
       this.saveCalendar();
     },
     eventReceive(info) {
+      document.getElementById("onDropModalButton").click();
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
+      this.lastEvent = info.event;
       this.saveCalendar();
     },
   },

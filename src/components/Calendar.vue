@@ -2,25 +2,29 @@
   <div class="row">
     <div class="col-md-12">
       <br />
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary" @click="saveState">Save</button>
+        <button type="button" class="btn btn-secondary" @click="loadState">Load</button>
+      </div>
     </div>
   </div>
   <div class="row">
 
     <div class="col-md-10">
-      <FullCalendar :options="calendarOptions" />
+      <FullCalendar :options="calendarOptions" ref="calendar" />
     </div>
     <div class="col-md-2">
       <h3 class="text-center">Tasks</h3>
       <br />
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-        <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id" class="card bg-primary mb-3 task-card"
-          :data-event="JSON.stringify(task)">
+        <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
+          class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
           <div class="card-header">{{ task.title }}</div>
           <div class="card-body">
             <p class="card-text">
               {{ task.client }} <br />
               {{ task.location }} <br />
-              {{ task.postcode }} 
+              {{ task.postcode }}
             </p>
           </div>
         </div>
@@ -47,38 +51,7 @@ export default {
   },
   data() {
     return {
-      calendarOptions: this.getCalendarOptions(),
-      collectors: Collectors,
-      tasks: Tasks
-    };
-  },
-  methods: {
-    initialSetup() {
-      this.calendarOptions.resources = this.collectors.map(collector => ({
-        id: collector.id,
-        title: collector.name,
-        eventColor: (BootStrapClasses[collector.id % 6]).code
-      }));
-
-      //make tasks draggable
-      var ele = this.$refs[`taskContainer`]
-      new Draggable(ele, {
-        itemSelector: '.card'
-      });
-    },
-
-    eventDragStop(info) {
-      this.$alert('Event Removed');
-      this.tasks.find(x => x.id == info.event._def.publicId).assigned = false;
-      info.event.remove();
-    },
-    eventReceive(info) {
-      this.$alert('Event Added');
-      this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
-    },
-
-    getCalendarOptions() {
-      return {
+      calendarOptions: {
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         plugins: [resourceTimelinePlugin, interactionPlugin],
         initialView: "resourceTimeline",
@@ -115,7 +88,49 @@ export default {
         slotMaxTime: "18:00:00",
         eventDragStop: this.eventDragStop,
         eventReceive: this.eventReceive,
-      };
+      },
+      collectors: Collectors,
+      tasks: Tasks,
+    };
+  },
+  methods: {
+    initialSetup() {
+      this.calendarOptions.resources = this.collectors.map(collector => ({
+        id: collector.id,
+        title: collector.name,
+        eventColor: (BootStrapClasses[collector.id % 6]).code
+      }));
+
+      //make tasks draggable
+      var ele = this.$refs[`taskContainer`]
+      new Draggable(ele, {
+        itemSelector: '.card'
+      });
+    },
+
+    eventDragStop(info) {
+      this.$alert('Event Removed');
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = false;
+      info.event.remove();
+    },
+    eventReceive(info) {
+      this.$alert('Event Added');
+      this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
+    },
+
+    saveState() {
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      localStorage.setItem('events', JSON.stringify(this.$refs.calendar.getApi().getEvents()));
+    },
+    loadState() {
+      try {
+        this.tasks = JSON.parse(localStorage.getItem('tasks'));
+        var data = JSON.parse(localStorage.getItem('events'));
+        this.calendarOptions.events = data
+      }
+      catch (e) {
+        console.log(e);
+      }
     },
   },
   mounted() {

@@ -7,14 +7,12 @@ import Toast from './components/Toast.vue'
 
 const app = createApp(App);
 
-
+app.config.globalProperties.$selectedRegion = 0;
 app.config.globalProperties.$alert = function (message, type = 'alert-primary', time = 5000) {
     let target = document.getElementById('alertContainer').appendChild(document.createElement('div'));
     let id = `alert-${Math.random()}`;
     let data = { msg: message, type: type, id: id };
     let vnode = createVNode(Alert, data);
-    console.log(vnode);
-    console.log(target);
     render(vnode, target);
 
     setTimeout(() => {
@@ -28,16 +26,24 @@ app.config.globalProperties.$toast = function (title, message, time = 5000) {
     let id = `toast-${Math.random()}`;
     let data = { msg: message, title: title, id: id };
     let vnode = createVNode(Toast, data);
-    console.log(vnode);
-    console.log(target);
     render(vnode, target);
 
     setTimeout(() => {
         var ele = document.getElementById('close-' + id);
         if(ele){ ele.click(); }
     }, time);
+}
 
-
+app.config.globalProperties.$getRegion = function (postcode){
+    let region;
+    if(postcode.startsWith('S')){
+        region = 0;
+    } else if(postcode.startsWith('L')){
+        region = 1;
+    } else if(postcode.startsWith('B')){
+        region = 2;
+    }
+    return region || 0;
 }
 
 app.mount('#app')

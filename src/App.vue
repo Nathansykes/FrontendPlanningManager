@@ -16,9 +16,7 @@
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true"
               aria-expanded="false">Region</a>
             <div class="dropdown-menu">
-              <a class="dropdown-item">South Yorkshire</a>
-              <a class="dropdown-item">Shropshire</a>
-              <a class="dropdown-item">Lancashire</a>
+              <a class="dropdown-item" v-for="region in regions" :key="region.id" @click="changeRegion(region.id)">{{region.name}}</a>
             </div>
           </li>
         </div>
@@ -35,7 +33,7 @@
       </div>
     </nav>
     <div id="view" class="container-fluid">
-      <Calendar v-if="(this.view == 0)" />
+      <Calendar v-if="(this.view == 0)" :region="this.$selectedRegion" :key="calendarKey"/>
       <Map v-if="(this.view == 1)" />
     </div>
     <div id="alertContainer">
@@ -50,7 +48,7 @@
 <script>
 import Calendar from './components/Calendar.vue';
 import Map from './components/Map.vue';
-
+import Regions from '../test-data/regions';
 
 export default {
   name: 'App',
@@ -60,13 +58,20 @@ export default {
   },
   data() {
     return {
+      regions: Regions,
       view: 0,
+      calendarKey: 0,
     }
   },
   methods: {
     changeView(viewIndex) {
       this.view = viewIndex;
       this.$toast('View Changed', `View changed to ${viewIndex == 0 ? 'Calendar' : 'Map'}`)
+    },
+    changeRegion(region) {
+      this.$selectedRegion = region;
+      this.calendarKey++;
+      this.$toast('Region Changed', `Region changed to ${Regions[region].name}`)
     },
   }
 }

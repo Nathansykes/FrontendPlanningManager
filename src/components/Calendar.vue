@@ -7,7 +7,7 @@
 
   <div class="row">
     <div class="col-md-10">
-      <button class="btn btn-primary" type="button" data-bs-target="#newCollectorModal" data-bs-toggle="modal"
+      <button class="btn btn-primary text-white" type="button" data-bs-target="#newCollectorModal" data-bs-toggle="modal"
         title="Add New Collector">
         Add New Collector <i class="bi bi-plus-square"></i></button>
       <FullCalendar :options="calendarOptions" ref="calendar" />
@@ -15,12 +15,12 @@
     <div class="col-md-2">
       <div id="tasksHeader">
         <h3 class="text-center">Tasks</h3>
-        <button class="btn btn-primary" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal"
-          title="Add New Task"><i class="bi bi-plus-square"></i></button>
+        <button class="btn btn-primary text-white" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal"
+          title="Add New Task"><i class="bi bi-plus-square text-white"></i></button>
       </div>
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 85vh;">
         <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-          class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
+          class="card bg-primary mb-3 task-card text-white" :data-event="JSON.stringify(task)">
           <div class="card-header">{{ task.title }}</div>
           <div class="card-body">
             <p class="card-text">
@@ -157,6 +157,7 @@ export default {
         eventDragStop: this.eventDragStop,
         eventReceive: this.eventReceive,
         eventChange: this.eventChange,
+        eventOverlap: false,
       },
       collectors: Collectors.filter(x => x.region == this.region),
       tasks: Tasks.filter(x => this.$getRegion(x.postcode) == this.region),

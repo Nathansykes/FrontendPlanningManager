@@ -2,14 +2,9 @@
   <div class="row">
     <div class="col-md-12">
       <br />
-      <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-secondary" @click="saveState">Save</button>
-        <button type="button" class="btn btn-secondary" @click="loadState">Load</button>
-      </div>
     </div>
   </div>
   <div class="row">
-
     <div class="col-md-10">
       <FullCalendar :options="calendarOptions" ref="calendar" />
     </div>
@@ -116,21 +111,6 @@ export default {
     eventReceive(info) {
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
-    },
-
-    saveState() {
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-      localStorage.setItem('events', JSON.stringify(this.$refs.calendar.getApi().getEvents()));
-    },
-    loadState() {
-      try {
-        this.tasks = JSON.parse(localStorage.getItem('tasks'));
-        var data = JSON.parse(localStorage.getItem('events'));
-        this.calendarOptions.events = data
-      }
-      catch (e) {
-        console.log(e);
-      }
     },
   },
   mounted() {

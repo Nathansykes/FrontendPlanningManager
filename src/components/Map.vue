@@ -75,15 +75,18 @@ export default {
             center: [-1.495063, 53.372188],
             map: {},
             start: [-1.495063, 53.372188],
-            collectors: Collectors.map(x => function () {
+            collectors: Collectors.filter(x => x.region == this.region).map(x => function () {
                 x.color = (BootStrapClasses[x.id % 6]).name;
                 return x;
             }()),
-            tasks: Tasks,
+            tasks: Tasks.filter(x => this.$getRegion(x.postcode) == this.region),
             coordinates: [],
             selectedCollector: 1,
             events: [],
         }
+    },
+    props: {
+        region: Number,
     },
     methods: {
         async createMap() {

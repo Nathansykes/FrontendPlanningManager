@@ -27,21 +27,9 @@
                 <section class="time-line-box">
                     <div class="swiper-container text-center"> 
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide">
-                                <div class="timestamp"><span class="date">09:15am</span></div>
-                                <div class="status"><span>Pickup 1</span></div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="timestamp"><span class="date">11:20am</span></div>
-                                <div class="status"><span>Pickup 2</span></div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="timestamp"><span class="date">2:30am</span></div>
-                                <div class="status"><span>Pickup 3</span></div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="timestamp"><span class="date">4:30am</span></div>
-                                <div class="status"><span>Pickup 4</span></div>
+                            <div class="swiper-slide" v-for="(event, index) in this.getCollectorEvents()" :key="index">
+                                <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
+                                <div class="status"><span>{{event.event.title}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -121,8 +109,8 @@ export default {
                         draggable: true,
                         color: "#D80739",
                     })
-                        .setLngLat(e.result.center)
-                        .addTo(this.map);
+                    .setLngLat(e.result.center)
+                    .addTo(this.map);
 
                     this.center = e.result.center;
 
@@ -220,13 +208,15 @@ export default {
         getCollectorEvents(){
             var calendar = JSON.parse(localStorage.getItem('calendar'));
             var events = calendar.filter(x => x.collector.id == this.selectedCollector);
+            events = events.sort((a, b) => new Date(a.event.start) - new Date(b.event.start))
+            console.log(events);
             return events;
         },
         
 
         async setCoordinates() {
             this.coordinates = [];
-            var events = this.getCollectorEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
+            var events = this.getCollectorEvents();
             var postcodes = events.map(x => x.event?.extendedProps?.postcode);
 
             this.coordinates.push(this.start);
@@ -301,9 +291,6 @@ export default {
                         'text-anchor': 'top'
                     }
                 });
-
-            
-
         },
     },
 
@@ -372,7 +359,7 @@ export default {
   overflow-y: auto;
 }
 .swiper-wrapper{
-  margin-top: 2.5vh;
+  margin-top: 1.5vh;
   display: inline-flex;
 }
 

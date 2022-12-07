@@ -16,6 +16,14 @@
     z-index: 9999;
 }
 
+#toastContainer {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 300px;
+    z-index: 9999;
+}
+
 .task-card:hover{
     cursor: grab;
 }

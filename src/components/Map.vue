@@ -155,7 +155,7 @@ export default {
                         'line-cap': 'round'
                     },
                     paint: {
-                        'line-color': '#3887be',
+                        'line-color': this.getCollectorEvents()[0].collector.eventBackgroundColor,
                         'line-width': 5,
                         'line-opacity': 0.75
                     }
@@ -172,22 +172,35 @@ export default {
 
         async selectCollector(id) {
             this.selectedCollector = id;
-            let layers = this.map.getStyle().layers.filter(x => x.id.includes('route'));
+            let routes = this.map.getStyle().layers.filter(x => x.id.includes('route'));
 
-            for(let i = 0; i < layers.length; i++) {
+            for(let i = 0; i < routes.length; i++) {
                 this.map.removeLayer('route' + i);
                 this.map.removeSource('route' + i);
             }
+            if(this.map.getSource('points'))
+            {
+                this.map.removeLayer('points');
+                this.map.removeSource('points');
+            }
+            
             await this.setCoordinates(id);
 
             this.plotRoute();
+            this.setPlots();
         },
 
-        async setCoordinates(collectorId = 0) {
-            this.coordinates = [];
+        getCollectorEvents(){
             var calendar = JSON.parse(localStorage.getItem('calendar'));
-            var events = calendar.filter(x => x.collector.id == collectorId).sort((a, b) => new Date(a.date) - new Date(b.date));
-            var postcodes = events.map(x => x.event.extendedProps.postcode);
+            var events = calendar.filter(x => x.collector.id == this.selectedCollector);
+            return events;
+        },
+        
+
+        async setCoordinates() {
+            this.coordinates = [];
+            var events = this.getCollectorEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
+            var postcodes = events.map(x => x.event?.extendedProps?.postcode);
 
             this.coordinates.push(this.start);
 
@@ -210,52 +223,19 @@ export default {
 
             this.coordinates.push(this.start);
 
-            console.log(this.coordinates)
         },
         plotRoute() {
             this.coordinates.map((coords, index) => this.plotMap(this.coordinates[index - 1] || this.start, coords, index));
-
-            // for(let i = 0; i < this.coordinates.length; i++){
-            //     console.log(this.coordinates[i])
-            //     await this.plotMap(this.coordinates[i - 1] || this.start, this.coordinates[i], i);
-            // }
         },
-    },
+        setPlots(){
+            let plots = this.coordinates.map((coords, index) => {
+                return {
+                    coordinates: coords,
+                    title: 'Collection' + (index + 1)
+                }
+            })
 
-    mounted() {
-        this.createMap()
-        this.setCoordinates(this.selectedCollector);
-
-        this.map.on('load', () => {
-
-            this.plotRoute();
-            var plots = [
-                {
-                    coordinates: this.coordinates[0],
-                    title: 'Home'
-                },
-                {
-                    coordinates: this.coordinates[1],
-                    title: 'Pickup 1'
-                },
-                {
-                    coordinates: this.coordinates[2],
-                    title: 'Pickup 2'
-                },
-                {
-                    coordinates: this.coordinates[3],
-                    title: 'Pickup 3'
-                },
-                {
-                    coordinates: this.coordinates[4],
-                    title: 'Pickup 4'
-                }];
-
-            this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {
-                if (error) throw error;
-                this.map.addImage('custom-marker', image);
-                // Add a GeoJSON source with 2 points
-                var features = [];
+            var features = [];
                 plots.map(plot => {
                     features.push({
                         'type': 'Feature',
@@ -294,7 +274,24 @@ export default {
                         'text-anchor': 'top'
                     }
                 });
+
+            
+
+        },
+    },
+
+
+    mounted() {
+        this.createMap()
+        this.setCoordinates(this.selectedCollector);
+
+        this.map.on('load', () => {
+            this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {
+                if (error) throw error;
+                this.map.addImage('custom-marker', image);                
             });
+            this.plotRoute();
+            this.setPlots();            
         });
     },
 }

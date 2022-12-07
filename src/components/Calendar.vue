@@ -7,15 +7,16 @@
 
   <div class="row">
     <div class="col-md-10">
-      <button class="btn btn-primary" type="button" data-bs-target="#newCollectorModal" data-bs-toggle="modal" title="Add New Collector">
+      <button class="btn btn-primary" type="button" data-bs-target="#newCollectorModal" data-bs-toggle="modal"
+        title="Add New Collector">
         Add New Collector <i class="bi bi-plus-square"></i></button>
       <FullCalendar :options="calendarOptions" ref="calendar" />
     </div>
     <div class="col-md-2">
       <div id="tasksHeader">
         <h3 class="text-center">Tasks</h3>
-        <button class="btn btn-primary" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal" title="Add New Task"><i
-            class="bi bi-plus-square"></i></button>
+        <button class="btn btn-primary" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal"
+          title="Add New Task"><i class="bi bi-plus-square"></i></button>
       </div>
       <div :ref="'taskContainer'" style="overflow-y:scroll; height: 85vh;">
         <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
@@ -89,8 +90,8 @@
             </div>
             <div class="form-group">
               <label for="collectorRegionInput" class="form-label mt-4">Region</label>
-              <input required type="text" class="form-control" id="collectorRegionInput" v-model="this.newCollector.name"
-                aria-describedby="emailHelp" placeholder="Enter Region Id">
+              <input required type="text" class="form-control" id="collectorRegionInput"
+                v-model="this.newCollector.name" aria-describedby="emailHelp" placeholder="Enter Region Id">
             </div>
           </div>
           <div class="modal-footer">
@@ -138,13 +139,11 @@ export default {
         resources: [],
         editable: true,
         selectable: true,
-        dropable: true,
         eventStartEditable: true,
         weekends: false,
         now: new Date(),
         eventClick: this.onEventClick,
         events: [],
-        ApplicationUser: null,
         contentHeight: 'auto',
         businessHours: {
           daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
@@ -173,7 +172,7 @@ export default {
       }
     };
   },
-  props :{
+  props: {
     region: Number,
   },
   methods: {
@@ -201,37 +200,40 @@ export default {
       this.$refs.dismissNewCollectorModal.click();
     },
 
-    
-    setResources(){
+
+    setResources() {
       this.calendarOptions.resources = Collectors.filter(x => x.region == this.region).map(collector => ({
         id: collector.id,
         title: collector.name,
         eventColor: (BootStrapClasses[collector.id % 6]).code
       }));
-    },  
+    },
 
-    eventChange(){
+    eventChange() {
       this.saveCalendar();
     },
 
-    loadCalendar(){
-      this.tasks = JSON.parse(localStorage.getItem('tasks'));
-      let events = JSON.parse(localStorage.getItem('calendar'));
-      if(events){
-        events.forEach(x => {
-          var eventToAdd = {
-            id: x.event.id,
-            title: x.event.title,
-            start: x.event.start,
-            end: x.event.end,
-            resourceId: x.collector.id
-          }
-          this.$refs.calendar.getApi().addEvent(eventToAdd);
-        })
+    loadCalendar() {
+      let calendarJson = localStorage.getItem('calendar');
+      if (calendarJson) {
+        this.tasks = JSON.parse(localStorage.getItem('tasks'));
+        let events = JSON.parse(calendarJson);
+        if (events) {
+          events.forEach(x => {
+            var eventToAdd = {
+              id: x.event.id,
+              title: x.event.title,
+              start: x.event.start,
+              end: x.event.end,
+              resourceId: x.collector.id
+            }
+            this.$refs.calendar.getApi().addEvent(eventToAdd);
+          })
+        }
       }
     },
 
-    saveCalendar(){
+    saveCalendar() {
       localStorage.setItem('tasks', JSON.stringify(this.tasks));
       let events = this.$refs.calendar.getApi().getEvents();
       let storeObject = events.map(x => ({
@@ -255,8 +257,7 @@ export default {
       let x = info.jsEvent.pageX;
       let y = info.jsEvent.pageY;
       let rect = this.$refs.calendar.calendar.el.getBoundingClientRect();
-      if(x < rect.left || x > rect.right || y < rect.top || y > rect.bottom)
-      {
+      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
         this.tasks.find(x => x.id == info.event._def.publicId).assigned = false;
         info.event.remove();
         this.$alert('Event Removed');

@@ -82,14 +82,14 @@
         <form v-on:submit.prevent="addTimeToTask">
           <div class="modal-header">
             <h5 class="modal-title">Add Journey Time</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeTimeModal"></button>
           </div>
           <div class="modal-body">
             <div class="form-group">
               <h2>Add Journey Time to beginning of the Collection</h2>
             </div>
             <div class="form-group">
-              <label for="timeInput" class="form-label mt-4">Journey Time</label>
+              <label for="timeInput" class="form-label mt-4">Journey Time (Minutes)</label>
               <input required type="number" class="form-control" id="timeInput" v-model="this.addTime.time"
                 aria-describedby="emailHelp" placeholder="Time In Minutes">
             </div>
@@ -97,7 +97,7 @@
             </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-              ref="dismissNewTaskModal">Close</button>
+              ref="dismissNewTaskModal">Don't Add Extra Time</button>
             <button type="submit" class="btn btn-success">Save</button>
           </div>
         </form>
@@ -241,13 +241,11 @@ export default {
     addTimeToTask() {
       let currentEvent = this.$refs.calendar.getApi().getEventById(this.lastEvent.id);
       let currentStart = currentEvent._instance.range.start;
-      let timeWithAdjustment = this.addTime.time*1.15;
-      let x = new Date() + timeWithAdjustment * 60000;
-      let newStart = currentStart - x;
+      let timeToAddMs = this.addTime.time*1.15*60000;
+      let newStartMs = currentStart.valueOf() - timeToAddMs;
 
-      console.log(newStart);
-      currentEvent.setStart(new Date(newStart));
-      console.log(currentEvent);
+      currentEvent.setStart(new Date(newStartMs));
+      document.getElementById('closeTimeModal').click();
     },
 
 

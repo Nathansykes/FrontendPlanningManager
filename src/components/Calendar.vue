@@ -107,11 +107,8 @@
 
 <script>
 import FullCalendar from "@fullcalendar/vue3";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import { Calendar } from '@fullcalendar/core';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import BootStrapClasses from "../BootStrapClasses.js";
 import Collectors from "../../test-data/collectors";
 import Tasks from "../../test-data/tasks";

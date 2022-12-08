@@ -341,8 +341,9 @@ export default {
 <style scoped>
 
 .time-line-box {
-    margin-top: 2vh;
-    height: 10vh;
+    margin-top: 1vh;
+    height: 8vh;
+    white-space: nowrap;
 }
 
 .time-line-box .timeline {

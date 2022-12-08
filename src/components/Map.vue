@@ -1,7 +1,10 @@
 <template>
     <div class="row">
-        <div class="col-md-12">
-            <br />
+        <div class="col-md-12" v-for="region in regions" :key="region.id">
+            <h4 v-if="(region.id == this.region)" style="margin-top: 1rem; margin-bottom: 0rem"> 
+                {{region.name}}
+                {{(this.date)}} 
+            </h4>
         </div>
     </div>
     <div class="row">
@@ -54,6 +57,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import BootStrapClasses from "../BootStrapClasses.js";
 import Collectors from "../../test-data/collectors";
 import Tasks from "../../test-data/tasks";
+import Regions from '../../test-data/regions';
 
 export default {
     name: "app",
@@ -73,6 +77,8 @@ export default {
             coordinates: [],
             selectedCollector: 1,
             events: [],
+            regions: Regions,
+            date: new Date()
         }
     },
     props: {
@@ -314,8 +320,11 @@ export default {
 
 
     mounted() {
-        this.createMap()
-        this.selectCollector(0)
+        this.createMap();
+        this.selectCollector(0);
+        
+        var calendar = JSON.parse(localStorage.getItem('calendar-' + this.region));
+        this.date = new Date(calendar[0].event.start).toLocaleDateString();
 
         this.map.on('load', () => {
             this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {

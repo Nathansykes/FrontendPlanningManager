@@ -2,16 +2,18 @@
   <br />
   <div class="row">
     <div class="col-md-2">
-      <h3 class="text-center">Schedulers</h3>
-      <br />
-      <div :ref="'schedulerContainer'" style="overflow-y: scroll; height: 78vh">
-        <div v-for="scheduler in this.schedulers" :key="scheduler.id" :value="scheduler.id"
-          class="card bg-primary mb-3 scheduler-card" :data-event="JSON.stringify(scheduler)">
-          <div class="card-header" @click="setSelectedUser(scheduler.id)">{{ scheduler.name }}</div>
-          <div class="card-body" @click="setSelectedUser(scheduler.id)">
-            <p class="card-text">
-              Last Online: 1 min ago <br />
-            </p>
+      <div class="alert alert-primary">
+        <h3 class="text-center">Schedulers</h3>
+        <br />
+        <div :ref="'schedulerContainer'" style="overflow-y: auto; height: 78vh">
+          <div v-for="scheduler in this.schedulers" :key="scheduler.id" :value="scheduler.id"
+            class="card bg-primary mb-3 scheduler-card text-white" :data-event="JSON.stringify(scheduler)">
+            <div class="card-header" @click="setSelectedUser(scheduler.id)">{{ scheduler.name }}</div>
+            <div class="card-body" @click="setSelectedUser(scheduler.id)">
+              <p class="card-text">
+                Last Online: 1 min ago <br />
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -43,7 +45,7 @@
             <input required v-model="this.userInput" type="text" class="form-control" placeholder="Type Message"
               maxlength="100" />
             <div class="input-group-append">
-              <button class="btn btn-primary" type="submit">Send</button>
+              <button class="btn btn-primary text-white" type="submit">Send</button>
             </div>
           </div>
         </form>

@@ -13,21 +13,28 @@
       <FullCalendar :options="calendarOptions" ref="calendar" />
     </div>
     <div class="col-md-2">
-      <div id="tasksHeader">
-        <h3 class="text-center">Tasks</h3>
-        <button class="btn btn-primary text-white" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal"
-          title="Add New Task"><i class="bi bi-plus-square text-white"></i></button>
-      </div>
-      <div :ref="'taskContainer'" style="overflow-y:scroll; height: 85vh;">
-        <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-          class="card bg-primary mb-3 task-card text-white" :data-event="JSON.stringify(task)">
-          <div class="card-header">{{ task.title }}</div>
-          <div class="card-body">
-            <p class="card-text">
-              {{ task.client }} <br />
-              {{ task.location }} <br />
-              {{ task.postcode }}
-            </p>
+      <div class="alert alert-primary" style="overflow-y:auto; height: 85vh;">
+        <div id="tasksHeader" style="margin-top: 5%; display: flex; justify-content: space-between;">
+          <h3 class="text-center margin">Tasks</h3>
+          <button class="btn btn-primary text-white margin" type="button" data-bs-target="#newTaskModal" data-bs-toggle="modal"
+            title="Add New Task"><i class="bi bi-plus-square text-white"></i></button>
+        </div>
+        <div :ref="'taskContainer'" >
+          <div v-if="((this.tasks.filter(x => x.assigned == false)).length <= 0)">
+            <div class="alert alert-primary margin">
+              Backlog is empty!
+            </div>
+          </div>
+          <div v-else v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
+            class="card bg-primary mb-3 task-card text-white margin" :data-event="JSON.stringify(task)">
+            <div class="card-header">{{ task.title }}</div>
+            <div class="card-body">
+              <p class="card-text">
+                {{ task.client }} <br />
+                {{ task.location }} <br />
+                {{ task.postcode }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -327,3 +334,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.margin {
+  margin: 5%;
+}
+</style>

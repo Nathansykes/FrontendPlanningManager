@@ -5,51 +5,41 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
-            <h3 class="text-center">Collectors</h3>
-            <br />
-            <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-                <div v-for="collector in this.collectors" :key="collector" :value="collector"
-                    class="card text-white mb-3" style="cursor: pointer" @click="selectCollector(collector.id)"
-                    :class="`bg-${collector.color}`">
-                    <div class="card-header">{{ collector.name }}</div>
-                    <div class="card-body">
-                        <p class="card-text">ID: {{ collector.id }}</p>
+        <div class="col-md-2" style="margin-top: 2vh">
+            <div class="alert alert-primary">
+                <h3 class="text-center">Collectors</h3>
+                <br />
+                <div :ref="'taskContainer'" style="overflow-y:auto; height: 73.2vh;">
+                    <div v-for="collector in this.collectors" :key="collector" :value="collector"
+                        class="card text-white mb-3" style="cursor: pointer" @click="selectCollector(collector.id)"
+                        :class="`bg-${collector.color}`">
+                        <div class="card-header">{{ collector.name }}</div>
+                        <div class="card-body">
+                            <p class="card-text">ID: {{ collector.id }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8" style="margin-top: 4.5%">
-            <div class="row">
-                <div id="map" style="height: 66vh;"></div>
+        <div class="col-md-10" style="margin-top: 2vh;">
+            <div class="row" style="margin-right: 1vh;">
+                <div id="map" style="height: 76vh;"></div>
             </div>
-            <div class="row">
-                <section class="time-line-box">
-                    <div class="swiper-container text-center"> 
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide" v-for="(event, index) in this.events" :key="index">
-                                <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
-                                <div class="status" @click="this.map.flyTo({center: event.event.extendedProps.coordinates, zoom : 14});"><span>{{event.event.title}}</span></div>
+            <div class="row" style="margin-right: 1vh;">
+                <div v-if="(this.events.length > 0)">
+                    <section class="time-line-box">
+                        <div class="swiper-container text-center"> 
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide" v-for="(event, index) in this.events" :key="index">
+                                    <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
+                                    <div class="status" @click="this.map.flyTo({center: event.event.extendedProps.coordinates, zoom : 14});"><span>{{event.event.title}}</span></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-            </section>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <h3 class="text-center">Tasks</h3>
-            <br />
-            <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-                <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-                    class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
-                    <div class="card-header">{{ task.title }}</div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            {{ task.client }} <br />
-                            {{ task.location }} <br />
-                            {{ task.postcode }}
-                        </p>
-                    </div>
+                    </section>
+                </div>
+                <div v-else class="alert alert-dismissible alert-danger" style="margin-top: 2vh">
+                    <strong>No events!</strong> This collector has no collections for today..
                 </div>
             </div>
         </div>
@@ -75,15 +65,18 @@ export default {
             center: [-1.495063, 53.372188],
             map: {},
             start: [-1.495063, 53.372188],
-            collectors: Collectors.map(x => function () {
+            collectors: Collectors.filter(x => x.region == this.region).map(x => function () {
                 x.color = (BootStrapClasses[x.id % 6]).name;
                 return x;
             }()),
-            tasks: Tasks,
+            tasks: Tasks.filter(x => this.$getRegion(x.postcode) == this.region),
             coordinates: [],
             selectedCollector: 1,
             events: [],
         }
+    },
+    props: {
+        region: Number,
     },
     methods: {
         async createMap() {
@@ -171,7 +164,7 @@ export default {
                         'line-cap': 'round'
                     },
                     paint: {
-                        'line-color': this.getCollectorEvents()[0].collector.eventBackgroundColor,
+                        'line-color': this.getCollectorEvents()[0]?.collector?.eventBackgroundColor,
                         'line-width': 5,
                         'line-opacity': 0.75
                     }
@@ -207,6 +200,7 @@ export default {
         },
 
         getCollectorEvents(){
+            console.log("here");
             var calendar = JSON.parse(localStorage.getItem('calendar'));
             var events = calendar.filter(x => x.collector.id == this.selectedCollector);
             events = events.sort((a, b) => new Date(a.event.start) - new Date(b.event.start))
@@ -308,7 +302,7 @@ export default {
 
     mounted() {
         this.createMap()
-        this.setCoordinates(this.selectedCollector);
+        this.selectCollector(0)
 
         this.map.on('load', () => {
             this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {
@@ -376,7 +370,6 @@ export default {
   overflow-y: auto;
 }
 .swiper-wrapper{
-  margin-top: 1.5vh;
   display: inline-flex;
 }
 

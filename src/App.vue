@@ -35,7 +35,7 @@
     </nav>
     <div id="view" class="container-fluid">
       <Calendar v-if="(this.view == 0)" :region="this.$selectedRegion" :key="calendarKey"/>
-      <Map v-if="(this.view == 1)" />      
+      <Map v-if="(this.view == 1)" :region="this.$selectedRegion" :key="mapKey"/>      
       <Collaboration v-if="(this.view == 2)"/>
     </div>
     <div id="alertContainer">
@@ -65,6 +65,7 @@ export default {
       regions: Regions,
       view: 0,
       calendarKey: 0,
+      mapKey: 0,
     }
   },
   methods: {
@@ -75,6 +76,7 @@ export default {
     changeRegion(region) {
       this.$selectedRegion = region;
       this.calendarKey++;
+      this.mapKey++;
       this.$toast('Region Changed', `Region changed to ${Regions[region].name}`)
     },
   }

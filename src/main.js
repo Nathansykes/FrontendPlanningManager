@@ -46,11 +46,11 @@ app.config.globalProperties.$message = function (title, message, sent, self, use
 
 app.config.globalProperties.$getRegion = function (postcode){
     let region;
-    if(postcode.startsWith('S')){
+    if(postcode.startsWith('S1')){
         region = 0;
     } else if(postcode.startsWith('L')){
         region = 1;
-    } else if(postcode.startsWith('B')){
+    } else if(postcode.startsWith('T') || postcode.startsWith('W') || postcode.startsWith('B') || postcode.startsWith('ST') || postcode.startsWith('SY')){
         region = 2;
     }
     return region || 0;

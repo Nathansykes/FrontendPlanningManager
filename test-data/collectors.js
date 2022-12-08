@@ -40,7 +40,8 @@ var Collectors = [
         id: 7,
         name: "Harry Styles",
         age: 21,
-        region: 2
+        region: 2,
+        startPostcode: "SY13 2BY" 
     },
 ]
 

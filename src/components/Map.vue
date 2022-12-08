@@ -200,8 +200,7 @@ export default {
         },
 
         getCollectorEvents(){
-            console.log("here");
-            var calendar = JSON.parse(localStorage.getItem('calendar'));
+            var calendar = JSON.parse(localStorage.getItem('calendar-' + this.region));
             var events = calendar.filter(x => x.collector.id == this.selectedCollector);
             events = events.sort((a, b) => new Date(a.event.start) - new Date(b.event.start))
             return events;
@@ -213,28 +212,42 @@ export default {
             this.events = this.getCollectorEvents();
             var postcodes = this.events.map(x => x.event?.extendedProps?.postcode);
 
-            this.coordinates.push(this.start);
-
-            for (let i = 0; i < postcodes.length; i++) {
-                try {
-                    let query = await fetch(
-                        `https://api.mapbox.com/geocoding/v5/mapbox.places/${postcodes[i]}.json?access_token=${mapboxgl.accessToken}`,
-                        { method: 'GET' }
-                    )
-                    var data = await query.json();
-                    let coordinates = data.features[0].geometry.coordinates;
-                    if (coordinates) {
-                        this.coordinates.push(coordinates);
-                        this.events[i].event.extendedProps.coordinates = coordinates;
-                    }
-                }
-                catch {
-                    // probs not a real postcode
-                }                
+            if (this.events[0].collector.extendedProps?.startPostcode) {
+                this.start = await this.getCoordinatesFromPostcode(this.events[0].collector.extendedProps?.startPostcode, 0);
             }
 
             this.coordinates.push(this.start);
 
+            for (let i = 0; i < postcodes.length; i++) {
+                await this.setCoordinatesFromPostcode(postcodes[i], i);
+            }
+
+            this.coordinates.push(this.start);
+
+        },
+        async getCoordinatesFromPostcode(postcode) {
+            try {
+                let query = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${postcode}.json?access_token=${mapboxgl.accessToken}`,
+                    { method: 'GET' }
+                )
+                var data = await query.json();
+                let coordinates = data.features[0].geometry.coordinates;
+                if (coordinates) {
+                    return coordinates;
+                }
+            }
+            catch {
+                // probs not a real postcode
+            }
+        },
+        async setCoordinatesFromPostcode(postcode, i) {
+            await this.getCoordinatesFromPostcode(postcode).then((coordinates) => {
+                if (coordinates) {
+                    this.coordinates.push(coordinates);
+                    this.events[i].event.extendedProps.coordinates = coordinates;
+                }
+            });
         },
         plotRoute() {
             this.coordinates.map((coords, index) => this.plotMap(this.coordinates[index - 1] || this.start, coords, index));

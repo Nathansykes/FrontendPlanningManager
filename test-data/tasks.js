@@ -38,6 +38,46 @@ var Tasks = [
         location: '17 Eccleshall Road, Sheffield',
         postcode: 'S11 8PF',
         assigned: false
+    },
+    {
+        id: 6,
+        title: 'Dairy sample collection',
+        client: 'Company Ltd',
+        location: 'International Way, Telford',
+        postcode: 'TF3 4JH',
+        assigned: false
+    },
+    {
+        id: 7,
+        title: 'River sample collection',
+        client: 'Company Ltd',
+        location: 'Stone Rd, Trentham, Stoke-on-Trent',
+        postcode: 'ST4 8JG',
+        assigned: false
+    },
+    {
+        id: 8,
+        title: 'Chocolate sample collection',
+        client: 'Company Ltd',
+        location: 'Cadbury World, 69 Linden Rd, Bournville, Birmingham',
+        postcode: 'B30 1JR',
+        assigned: false
+    },
+    {
+        id: 9,
+        title: 'Blood sample collection',
+        client: 'Company Ltd',
+        location: 'Park Rd W, Wolverhampton',
+        postcode: 'WV1 4PW',
+        assigned: false
+    },
+    {
+        id: 10,
+        title: 'River sample collection',
+        client: 'Company Ltd',
+        location: 'Shrewsbury',
+        postcode: 'SY1 1JA',
+        assigned: false
     }
     
 ]

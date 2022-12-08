@@ -201,7 +201,7 @@ export default {
         eventOverlap: false,
       },
       collectors: Collectors.filter(x => x.region == this.region),
-      tasks: Tasks.filter(x => this.$getRegion(x.postcode) == this.region),
+      tasks: [],
       newTask: {
         title: '',
         client: '',
@@ -260,7 +260,8 @@ export default {
       this.calendarOptions.resources = Collectors.filter(x => x.region == this.region).map(collector => ({
         id: collector.id,
         title: collector.name,
-        eventColor: (BootStrapClasses[collector.id % 6]).code
+        eventColor: (BootStrapClasses[collector.id % 6]).code,
+        startPostcode: collector.startPostcode,
       }));
     },
 
@@ -269,7 +270,7 @@ export default {
     },
 
     loadCalendar() {
-      let calendarJson = localStorage.getItem('calendar');
+      let calendarJson = localStorage.getItem('calendar-' + this.region);
       if (calendarJson) {
         this.tasks = JSON.parse(localStorage.getItem('tasks'));
         let events = JSON.parse(calendarJson);
@@ -297,7 +298,7 @@ export default {
         collector: x.getResources()[0]
       }))
       console.log(storeObject);
-      localStorage.setItem('calendar', JSON.stringify(storeObject));
+      localStorage.setItem('calendar-' + this.region, JSON.stringify(storeObject));
     },
 
     initialSetup() {
@@ -331,6 +332,8 @@ export default {
   mounted() {
     this.initialSetup();
     this.loadCalendar();
+
+    this.tasks = Tasks.filter(x => this.$getRegion(x.postcode) == this.region);
   },
 };
 </script>

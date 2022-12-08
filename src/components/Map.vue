@@ -5,25 +5,27 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
-            <h3 class="text-center">Collectors</h3>
-            <br />
-            <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-                <div v-for="collector in this.collectors" :key="collector" :value="collector"
-                    class="card text-white mb-3" style="cursor: pointer" @click="selectCollector(collector.id)"
-                    :class="`bg-${collector.color}`">
-                    <div class="card-header">{{ collector.name }}</div>
-                    <div class="card-body">
-                        <p class="card-text">ID: {{ collector.id }}</p>
+        <div class="col-md-2" style="margin-top: 2vh">
+            <div class="alert alert-primary">
+                <h3 class="text-center">Collectors</h3>
+                <br />
+                <div :ref="'taskContainer'" style="overflow-y:auto; height: 73.2vh;">
+                    <div v-for="collector in this.collectors" :key="collector" :value="collector"
+                        class="card text-white mb-3" style="cursor: pointer" @click="selectCollector(collector.id)"
+                        :class="`bg-${collector.color}`">
+                        <div class="card-header">{{ collector.name }}</div>
+                        <div class="card-body">
+                            <p class="card-text">ID: {{ collector.id }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8" style="margin-top: 4.5%">
-            <div class="row">
-                <div id="map" style="height: 66vh;"></div>
+        <div class="col-md-10" style="margin-top: 2vh;">
+            <div class="row" style="margin-right: 1vh;">
+                <div id="map" style="height: 76vh;"></div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-right: 1vh;">
                 <div v-if="(this.events.length > 0)">
                     <section class="time-line-box">
                         <div class="swiper-container text-center"> 
@@ -38,23 +40,6 @@
                 </div>
                 <div v-else class="alert alert-dismissible alert-danger" style="margin-top: 2vh">
                     <strong>No events!</strong> This collector has no collections for today..
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <h3 class="text-center">Tasks</h3>
-            <br />
-            <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
-                <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-                    class="card bg-primary mb-3 task-card text-white" :data-event="JSON.stringify(task)">
-                    <div class="card-header">{{ task.title }}</div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            {{ task.client }} <br />
-                            {{ task.location }} <br />
-                            {{ task.postcode }}
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -385,7 +370,6 @@ export default {
   overflow-y: auto;
 }
 .swiper-wrapper{
-  margin-top: 1.5vh;
   display: inline-flex;
 }
 

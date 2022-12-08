@@ -24,16 +24,21 @@
                 <div id="map" style="height: 66vh;"></div>
             </div>
             <div class="row">
-                <section class="time-line-box">
-                    <div class="swiper-container text-center"> 
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide" v-for="(event, index) in this.events" :key="index">
-                                <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
-                                <div class="status" @click="this.map.flyTo({center: event.event.extendedProps.coordinates, zoom : 14});"><span>{{event.event.title}}</span></div>
+                <div v-if="(this.events.length > 0)">
+                    <section class="time-line-box">
+                        <div class="swiper-container text-center"> 
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide" v-for="(event, index) in this.events" :key="index">
+                                    <div class="timestamp"><span class="date">{{new Date(event.event.start).getHours() + ":" + new Date(event.event.start).getMinutes()}}</span></div>
+                                    <div class="status" @click="this.map.flyTo({center: event.event.extendedProps.coordinates, zoom : 14});"><span>{{event.event.title}}</span></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-            </section>
+                    </section>
+                </div>
+                <div v-else class="alert alert-dismissible alert-danger" style="margin-top: 2vh">
+                    <strong>No events!</strong> This collector has no collections for today..
+                </div>
             </div>
         </div>
         <div class="col-md-2">
@@ -41,7 +46,7 @@
             <br />
             <div :ref="'taskContainer'" style="overflow-y:scroll; height: 78vh;">
                 <div v-for="task in this.tasks.filter(x => x.assigned == false)" :key="task.id" :value="task.id"
-                    class="card bg-primary mb-3 task-card" :data-event="JSON.stringify(task)">
+                    class="card bg-primary mb-3 task-card text-white" :data-event="JSON.stringify(task)">
                     <div class="card-header">{{ task.title }}</div>
                     <div class="card-body">
                         <p class="card-text">
@@ -174,7 +179,7 @@ export default {
                         'line-cap': 'round'
                     },
                     paint: {
-                        'line-color': this.getCollectorEvents()[0].collector.eventBackgroundColor,
+                        'line-color': this.getCollectorEvents()[0]?.collector?.eventBackgroundColor,
                         'line-width': 5,
                         'line-opacity': 0.75
                     }
@@ -210,6 +215,7 @@ export default {
         },
 
         getCollectorEvents(){
+            console.log("here");
             var calendar = JSON.parse(localStorage.getItem('calendar'));
             var events = calendar.filter(x => x.collector.id == this.selectedCollector);
             events = events.sort((a, b) => new Date(a.event.start) - new Date(b.event.start))
@@ -311,7 +317,7 @@ export default {
 
     mounted() {
         this.createMap()
-        this.setCoordinates(this.selectedCollector);
+        this.selectCollector(0)
 
         this.map.on('load', () => {
             this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {

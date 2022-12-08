@@ -322,10 +322,9 @@ export default {
     mounted() {
         this.createMap();
         this.selectCollector(0);
+        
         var calendar = JSON.parse(localStorage.getItem('calendar-' + this.region));
-        console.log(calendar);
         this.date = new Date(calendar[0].event.start).toLocaleDateString();
-        console.log(this.date)
 
         this.map.on('load', () => {
             this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', (error, image) => {

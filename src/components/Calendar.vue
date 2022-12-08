@@ -10,7 +10,15 @@
       <button class="btn btn-primary text-white" type="button" data-bs-target="#newCollectorModal" data-bs-toggle="modal"
         title="Add New Collector">
         Add New Collector <i class="bi bi-plus-square"></i></button>
-      <FullCalendar :options="calendarOptions" ref="calendar" />
+      <div class="row">
+        <FullCalendar :options="calendarOptions" ref="calendar" />
+      </div>
+      <div class="row">
+        <div style="display:flex; justify-content:flex-start; margin-top: 2.5vh;">
+          <button id="onDropModalButton" class="btn btn-primary text-white" type="button" style="height: 6vh; width: 8vh" data-bs-target="#OnDropModal" data-bs-toggle="modal" title="Add New Task"><i class="bi bi-plus-square"></i></button>
+          <button class="btn btn-primary text-white" type="button" style="height: 6vh; width: 10vh; margin-left: 90%;" @click="saveButton">Save</button>
+        </div>
+      </div>
     </div>
     <div class="col-md-2">
       <div class="alert alert-primary" style="overflow-y:auto; height: 85vh;">
@@ -81,8 +89,6 @@
     </div>
   </div>
 
-  <button id="onDropModalButton" class="btn btn-primary" type="button" data-bs-target="#OnDropModal" data-bs-toggle="modal" title="Add New Task"><i
-            class="bi bi-plus-square"></i></button>
   <div class="modal" id="OnDropModal" ref="newTaskModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -175,6 +181,9 @@ export default {
             headerContent: 'Collectors'
           }
         ],
+        contentHeight: '70vh',
+        height: '70vh',
+        expandRows: true,
         resourceAreaWidth: '15%',
         resources: [],
         editable: true,
@@ -185,7 +194,6 @@ export default {
         eventClick: this.onEventClick,
         events: [],
         lastEvent: null,
-        contentHeight: 'auto',
         businessHours: {
           daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
           startTime: '08:00',
@@ -265,6 +273,15 @@ export default {
       }));
     },
 
+    saveButton() {
+      this.calendarOptions.resources = Collectors.filter(x => x.region == this.region).map(collector => ({
+        id: collector.id,
+        title: collector.name,
+        eventColor: (BootStrapClasses[collector.id % 6]).code,
+        startPostcode: collector.startPostcode,
+      }));
+    },
+
     eventChange() {
       this.saveCalendar();
     },
@@ -326,6 +343,13 @@ export default {
       this.$alert('Event Added');
       this.tasks.find(x => x.id == info.event._def.publicId).assigned = true;
       this.lastEvent = info.event;
+
+      this.calendarOptions.resources.map(resource => {
+        if (resource.id == info.event._def.resourceIds[0]) {
+          resource.eventColor = "grey";
+        }
+      });
+
       this.saveCalendar();
     },
   },
